@@ -1,0 +1,108 @@
+def print_board(board):
+    """Prints the Tic Tac Toe board."""
+    for row in board:
+        print(" ".join(row))
+    print()
+
+def nextMove(player, board):
+    """
+    Determines the next move for the player in the Tic Tac Toe game.
+    
+    Parameters:
+    player (str): The current player ('X' or 'O').
+    board (list of list of str): The current state of the board.
+    
+    Returns:
+    tuple: The row and column indices of the next move.
+    """
+    opponent = 'O' if player == 'X' else 'X'
+    
+    # Check for a winning move for the player
+    move = findWinningMove(player, board)
+    if move:
+        return move
+
+    # Check for a blocking move against the opponent
+    move = findWinningMove(opponent, board)
+    if move:
+        return move
+
+    # Otherwise, take the first available spot
+    for r in range(3):
+        for c in range(3):
+            if board[r][c] == '_':
+                return (r, c)
+
+def findWinningMove(player, board):
+    """
+    Finds a winning move for the player if available.
+    
+    Parameters:
+    player (str): The current player ('X' or 'O').
+    board (list of list of str): The current state of the board.
+    
+    Returns:
+    tuple: The row and column indices of the winning move, or None if no winning move is found.
+    """
+    for r in range(3):
+        for c in range(3):
+            if board[r][c] == '_':
+                board[r][c] = player
+                if checkWin(player, board):
+                    board[r][c] = '_'
+                    return (r, c)
+                board[r][c] = '_'
+    return None
+
+def checkWin(player, board):
+    """
+    Checks if the player has won the game.
+    
+    Parameters:
+    player (str): The current player ('X' or 'O').
+    board (list of list of str): The current state of the board.
+    
+    Returns:
+    bool: True if the player has won, False otherwise.
+    """
+    for r in range(3):
+        if all([board[r][c] == player for c in range(3)]):
+            return True
+    for c in range(3):
+        if all([board[r][c] == player for r in range(3)]):
+            return True
+    if all([board[i][i] == player for i in range(3)]) or all([board[i][2-i] == player for i in range(3)]):
+        return True
+    return False
+
+def main():
+    board = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
+    player = 'X'
+    
+    print("Initial board:")
+    print_board(board)
+    
+    while True:
+        print(f"Player {player}'s turn")
+        move = nextMove(player, board)
+        if move:
+            r, c = move
+        else:
+            print("No valid moves left. Game over!")
+            break
+        
+        board[r][c] = player
+        print_board(board)
+        
+        if checkWin(player, board):
+            print(f"Player {player} wins!")
+            break
+        
+        player = 'O' if player == 'X' else 'X'
+        
+        if all(board[r][c] != '_' for r in range(3) for c in range(3)):
+            print("It's a draw!")
+            break
+
+if __name__ == "__main__":
+    main()
